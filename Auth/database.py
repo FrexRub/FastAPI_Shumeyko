@@ -5,7 +5,7 @@ from fastapi import Depends
 from fastapi_users.db import SQLAlchemyBaseUserTable, SQLAlchemyUserDatabase
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
-from sqlalchemy import Integer, func
+from sqlalchemy import Integer, func, DateTime
 
 DATABASE_URL = "sqlite+aiosqlite:///./test.db"
 
@@ -15,9 +15,11 @@ class Base(DeclarativeBase):
 
 
 class User(SQLAlchemyBaseUserTable[int], Base):
+    __tablename__ = "users"
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     username: Mapped[str]
-    registered_at: Mapped[datetime] = mapped_column(
+    registered_at: Mapped[DateTime] = mapped_column(
+        DateTime,
         server_default=func.now(),
         default=datetime.datetime.utcnow(),
     )
@@ -25,11 +27,6 @@ class User(SQLAlchemyBaseUserTable[int], Base):
 
 engine = create_async_engine(DATABASE_URL)
 async_session_maker = async_sessionmaker(engine, expire_on_commit=False)
-
-
-async def create_db_and_tables():
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
 
 
 async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
