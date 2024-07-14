@@ -5,15 +5,16 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, Depends
 from fastapi_users import FastAPIUsers
 from fastapi.middleware.cors import CORSMiddleware
-
-import uvicorn
-
-from Auth import User, get_user_manager, auth_backend, UserRead, UserCreate
 from fastapi_cache import FastAPICache
 from fastapi_cache.backends.redis import RedisBackend
 from fastapi_cache.decorator import cache
-
+from fastapi.staticfiles import StaticFiles
+import uvicorn
 from redis import asyncio as aioredis
+
+from Auth import User, get_user_manager, auth_backend, UserRead, UserCreate
+from pages.router import router as router_pages
+
 
 fastapi_users = FastAPIUsers[User, int](
     get_user_manager,
@@ -31,6 +32,8 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
 
 
 app = FastAPI(lifespan=lifespan)
+
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 origins = [
     # "http://localhost.tiangolo.com",
@@ -64,6 +67,8 @@ app.include_router(
     prefix="/auth",
     tags=["auth"],
 )
+
+app.include_router(router_pages)
 
 current_user = fastapi_users.current_user()
 
