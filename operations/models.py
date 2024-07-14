@@ -1,14 +1,14 @@
-from sqlalchemy import TIMESTAMP, Column, Integer, String, Table
+from sqlalchemy import DateTime, Column, Integer, String, Table
+from sqlalchemy.orm import Mapped, mapped_column
 
-from database import metadata
+from database import Base
 
-operation = Table(
-    "operation",
-    metadata,
-    Column("id", Integer, primary_key=True),
-    Column("quantity", String),
-    Column("figi", String),
-    Column("instrument_type", String, nullable=True),
-    Column("date", TIMESTAMP),
-    Column("type", String),
-)
+
+class Operation(Base):
+    __nametable__ = "operation"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    quantity: Mapped[str]
+    figi: Mapped[str]
+    instrument_type: Mapped[str] = mapped_column(nullable=True)
+    date: Mapped[DateTime]
+    type: Mapped[str]

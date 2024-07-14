@@ -1,15 +1,14 @@
 from typing import AsyncGenerator
 
-from sqlalchemy import MetaData
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
-from sqlalchemy.pool import NullPool
-
+from sqlalchemy.orm import DeclarativeBase
 
 DATABASE_URL = "sqlite+aiosqlite:///./test.db"
-Base = declarative_base()
 
-metadata = MetaData()
+
+class Base(DeclarativeBase):
+    pass
+
 
 engine = create_async_engine(DATABASE_URL)
 async_session_maker = async_sessionmaker(engine, expire_on_commit=False)
