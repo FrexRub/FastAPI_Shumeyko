@@ -14,6 +14,8 @@ from redis import asyncio as aioredis
 
 from Auth import User, get_user_manager, auth_backend, UserRead, UserCreate
 from pages.router import router as router_pages
+from operations.router import router as router_operation
+from pages.router import router as router_pages
 
 
 fastapi_users = FastAPIUsers[User, int](
@@ -52,6 +54,7 @@ app.add_middleware(
         "Content-Type",
         "Set-Cookie",
         "Access-Control-Allow-Headers",
+        "Access-Control-Allow-Origin",
         "Authorization",
     ],
 )
@@ -68,6 +71,8 @@ app.include_router(
     tags=["auth"],
 )
 
+app.include_router(router_operation)
+# app.include_router(router_tasks)
 app.include_router(router_pages)
 
 current_user = fastapi_users.current_user()
@@ -91,6 +96,4 @@ async def long_operation():
 
 
 if __name__ == "__main__":
-    uvicorn.run(
-        "main:app",
-    )
+    uvicorn.run("main:app", reload=True)
