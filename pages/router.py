@@ -13,6 +13,7 @@ def get_base_page(request: Request):
     return templates.TemplateResponse("base.html", {"request": request})
 
 
+# {operation_type} из пути запроса передается в end-point get_specific_operations
 @router.get("/search/{operation_type}")
 def get_search_page(request: Request, operations=Depends(get_specific_operations)):
     return templates.TemplateResponse(
